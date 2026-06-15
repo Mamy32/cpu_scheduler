@@ -161,4 +161,4 @@ Completion Time is the time at which a process finishes execution.
 Developed as an Operating Systems Final Project.
 
 * Mamy Jean
-* Team Member Name
+* Jovan
