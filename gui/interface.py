@@ -16,7 +16,7 @@ class CPUSchedulerGUI:
         self.root = root
 
         self.root.title("CPU Scheduling Simulator")
-        self.root.geometry("1200x700")
+        self.root.geometry("1200x800")
         self.root.resizable(False, False)
 
         self.setup_ui()
@@ -111,6 +111,15 @@ class CPUSchedulerGUI:
             value="SJF"
         ).pack(anchor="w")
 
+        self.sjf_preemptive = tk.BooleanVar(value=False)
+
+        self.sjf_check = tk.Checkbutton(
+            algorithm_frame,
+            text="Preemptive (SRTF)",
+            variable=self.sjf_preemptive
+        )
+        self.sjf_check.pack(anchor="w", padx=15)
+
         tk.Radiobutton(
             algorithm_frame,
             text="Round Robin",
@@ -124,6 +133,16 @@ class CPUSchedulerGUI:
             variable=self.algorithm,
             value="Priority"
         ).pack(anchor="w")
+
+        self.priority_preemptive = tk.BooleanVar(value=False)
+
+        self.priority_check = tk.Checkbutton(
+            algorithm_frame,
+            text="Preemptive",
+            variable=self.priority_preemptive
+        )
+        self.priority_check.pack(anchor="w", padx=15)
+
 
         tk.Label(
             algorithm_frame,
@@ -360,18 +379,25 @@ class CPUSchedulerGUI:
             result = fcfs(processes)
             self.display_results(result, "FCFS")
             self.draw_gantt_in_gui(result["gantt"])
+        
         elif selected_algorithm == "SJF":
-            result = sjf(processes)
-            self.display_results(result, "SJF")
+            is_preemptive = self.sjf_preemptive.get()
+            result = sjf(processes, preemptive=is_preemptive)
+            label = "SJF - Preemptive (SRTF)" if is_preemptive else "SJF - Non Preemptive"
+            self.display_results(result, label)
             self.draw_gantt_in_gui(result["gantt"])
+
         elif selected_algorithm == "RR":
             quantum = int(self.quantum_entry.get())
             result = round_robin(processes, quantum)
             self.display_results(result, "Round Robin")
             self.draw_gantt_in_gui(result["gantt"])
+
         elif selected_algorithm == "Priority":
-            result = priority_scheduling(processes)
-            self.display_results(result, "Priority")
+            is_preemptive = self.priority_preemptive.get()
+            result = priority_scheduling(processes, preemptive=is_preemptive)
+            label = "Priority - Preemptive" if is_preemptive else "Priority - Non Preemptive"
+            self.display_results(result, label)
             self.draw_gantt_in_gui(result["gantt"])
 
     
