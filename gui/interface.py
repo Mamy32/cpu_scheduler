@@ -1,6 +1,9 @@
 # gui/interface.py
 from models.process import Process
 from algorithms.fcfs import fcfs
+from algorithms.sjf import sjf
+from algorithms.rr import round_robin
+from algorithms.priority import priority_scheduling
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
 import tkinter as tk
@@ -340,10 +343,10 @@ class CPUSchedulerGUI:
             values = self.process_table.item(row)["values"]
 
             process = Process(
-                values[0],  # PID
-                values[1],  # Arrival
-                values[2],  # Burst
-                values[3]   # Priority
+                str(values[0]),  # PID
+                int(values[1]),  # Arrival
+                int(values[2]),  # Burst
+                int(values[3])   # Priority
             )
 
             processes.append(process)
@@ -354,24 +357,32 @@ class CPUSchedulerGUI:
         selected_algorithm = self.algorithm.get()
 
         if selected_algorithm == "FCFS":
-
             result = fcfs(processes)
+            self.display_results(result, "FCFS")
+            self.draw_gantt_in_gui(result["gantt"])
+        elif selected_algorithm == "SJF":
+            result = sjf(processes)
+            self.display_results(result, "SJF")
+            self.draw_gantt_in_gui(result["gantt"])
+        elif selected_algorithm == "RR":
+            quantum = int(self.quantum_entry.get())
+            result = round_robin(processes, quantum)
+            self.display_results(result, "Round Robin")
+            self.draw_gantt_in_gui(result["gantt"])
+        elif selected_algorithm == "Priority":
+            result = priority_scheduling(processes)
+            self.display_results(result, "Priority")
+            self.draw_gantt_in_gui(result["gantt"])
 
-            self.display_results(result)
-
-            # Draw Gantt Chart
-            self.draw_gantt_in_gui(
-                result["gantt"]
-            )
     
-    def display_results(self, result):
+    def display_results(self, result,algorithm_name=""):
 
         self.results_text.delete("1.0", tk.END)
 
         self.results_text.insert(
             tk.END,
-            "FCFS RESULTS\n\n"
-        )
+            f"{algorithm_name} RESULTS\n\n"
+    )
 
         self.results_text.insert(
             tk.END,
